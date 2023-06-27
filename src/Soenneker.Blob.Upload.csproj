@@ -41,6 +41,6 @@
 
         <PackageReference Include="Soenneker.Blob.Sas" Version="1.0.76" />
 
-        <PackageReference Include="Soenneker.Utils.MemoryStream" Version="1.0.82" />
+        <PackageReference Include="Soenneker.Utils.MemoryStream" Version="1.0.84" />
     </ItemGroup>
 </Project>
