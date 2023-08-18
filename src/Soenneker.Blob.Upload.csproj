@@ -39,7 +39,7 @@
 
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 
-        <PackageReference Include="Soenneker.Blob.Sas" Version="1.0.122" />
+        <PackageReference Include="Soenneker.Blob.Sas" Version="1.0.125" />
 
         <PackageReference Include="Soenneker.Utils.MemoryStream" Version="1.0.119" />
     </ItemGroup>
