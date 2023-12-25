@@ -8,5 +8,5 @@
 ## Installation
 
 ```
-Install-Package Soenneker.Blob.Upload
+dotnet add package Soenneker.Blob.Upload
 ```
