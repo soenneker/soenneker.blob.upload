@@ -7,7 +7,6 @@ namespace Soenneker.Blob.Upload.Abstract;
 
 /// <summary>
 /// All of these methods overwrite a file if it currently exists.. <para/>
-/// Scoped IoC
 /// </summary>
 public interface IBlobUploadUtil
 {

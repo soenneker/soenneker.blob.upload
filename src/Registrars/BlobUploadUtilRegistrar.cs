@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Soenneker.Blob.Client.Registrars;
 using Soenneker.Blob.Sas.Registrars;
 using Soenneker.Blob.Upload.Abstract;
 using Soenneker.Utils.MemoryStream.Registrars;
@@ -14,20 +13,15 @@ public static class BlobUploadUtilRegistrar
 {
     public static void AddBlobUploadUtilAsSingleton(this IServiceCollection services)
     {
-        services.TryAddSingleton<IBlobUploadUtil, BlobUploadUtil>();
         services.AddMemoryStreamUtil();
-        services.AddBlobClientUtilAsSingleton();
         services.AddBlobSasUtilAsSingleton();
+        services.TryAddSingleton<IBlobUploadUtil, BlobUploadUtil>();
     }
 
-    /// <summary>
-    /// Recommended
-    /// </summary>
     public static void AddBlobUploadUtilAsScoped(this IServiceCollection services)
     {
         services.AddMemoryStreamUtil();
-        services.AddBlobClientUtilAsScoped();
-        services.TryAddScoped<IBlobUploadUtil, BlobUploadUtil>();
         services.AddBlobSasUtilAsScoped();
+        services.TryAddScoped<IBlobUploadUtil, BlobUploadUtil>();
     }
 }
