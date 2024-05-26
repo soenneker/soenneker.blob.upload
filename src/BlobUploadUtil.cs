@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Blobs;
@@ -28,51 +29,73 @@ public class BlobUploadUtil : IBlobUploadUtil
         _memoryStreamUtil = memoryStreamUtil;
         _blobSasUtil = blobSasUtil;
     }
-    
-    public async ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, Stream content, PublicAccessType publicAccessType = PublicAccessType.None)
-    {
-        _logger.LogInformation("Uploading Blob to container ({containerName}), path {relativeUrl} ...", containerName, relativeUrl);
-        BlobClient blobClient = await _blobClientUtil.Get(containerName, relativeUrl, publicAccessType).NoSync();
 
-        Response<BlobContentInfo> response = await blobClient.UploadAsync(content, overwrite: true).NoSync();
-
-        _logger.LogDebug("Finished Blob upload to container ({containerName}), path {relativeUrl}", containerName, relativeUrl);
-
-        return response;
-    }
-
-    public async ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, byte[] bytes, PublicAccessType publicAccessType = PublicAccessType.None)
+    public async ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, byte[] bytes, string? contentType = null,
+        PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
     {
         using MemoryStream stream = await _memoryStreamUtil.Get(bytes).NoSync();
-        Response<BlobContentInfo> result = await Upload(containerName, relativeUrl, stream, publicAccessType).NoSync();
+        Response<BlobContentInfo> result = await Upload(containerName, relativeUrl, stream, contentType, publicAccessType, cancellationToken).NoSync();
         return result;
     }
 
-    public async ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, string content, PublicAccessType publicAccessType = PublicAccessType.None)
+    public async ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, string content, string? contentType = null,
+        PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
     {
         using MemoryStream stream = await _memoryStreamUtil.Get(content).NoSync();
-        Response<BlobContentInfo> result = await Upload(containerName, relativeUrl, stream, publicAccessType).NoSync();
+        Response<BlobContentInfo> result = await Upload(containerName, relativeUrl, stream, contentType, publicAccessType, cancellationToken).NoSync();
         return result;
     }
 
-    public async ValueTask<Response<BlobContentInfo>> UploadFromFile(string containerName, string relativeUrl, string absolutePath, PublicAccessType publicAccessType = PublicAccessType.None)
+    public async ValueTask<Response<BlobContentInfo>> UploadFromFile(string containerName, string relativeUrl, string absolutePath, string? contentType = null,
+        PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Uploading Blob ({absolutePath}) to container ({containerName}) at {relativeUrl} ...", absolutePath, containerName, relativeUrl);
         BlobClient blobClient = await _blobClientUtil.Get(containerName, relativeUrl, publicAccessType).NoSync();
 
-        Response<BlobContentInfo> response = await blobClient.UploadAsync(absolutePath, overwrite: true).NoSync();
+        BlobHttpHeaders? blobHttpHeaders = GetBlobHeaders(contentType);
+
+        Response<BlobContentInfo> response = await blobClient.UploadAsync(absolutePath, blobHttpHeaders, cancellationToken: cancellationToken).NoSync();
 
         _logger.LogDebug("Finished upload Blob ({absolutePath}) to container ({containerName}) at {relativeUrl}", absolutePath, containerName, relativeUrl);
 
         return response;
     }
 
-    public async ValueTask<string> UploadAndGetUri(string container, string fileName, byte[] reportBytes, PublicAccessType publicAccessType = PublicAccessType.None)
+    public async ValueTask<string> UploadAndGetSasUri(string container, string fileName, byte[] bytes, string? contentType = null,
+        PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
     {
-        _ = await Upload(container, fileName, reportBytes, publicAccessType).NoSync();
+        _ = await Upload(container, fileName, bytes, contentType, publicAccessType, cancellationToken).NoSync();
 
         string uri = (await _blobSasUtil.GetSasUriWithClient(container, fileName).NoSync())!;
 
         return uri;
+    }
+
+    public async ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, Stream content, string? contentType = null,
+        PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Uploading Blob to container ({containerName}), path {relativeUrl} ...", containerName, relativeUrl);
+        BlobClient blobClient = await _blobClientUtil.Get(containerName, relativeUrl, publicAccessType).NoSync();
+
+        BlobHttpHeaders? blobHttpHeaders = GetBlobHeaders(contentType);
+
+        Response<BlobContentInfo> response = await blobClient.UploadAsync(content, blobHttpHeaders, cancellationToken: cancellationToken).NoSync();
+
+        _logger.LogDebug("Finished Blob upload to container ({containerName}), path {relativeUrl}", containerName, relativeUrl);
+
+        return response;
+    }
+
+    private static BlobHttpHeaders? GetBlobHeaders(string? contentType)
+    {
+        if (contentType == null)
+            return null;
+
+        var blobHttpHeaders = new BlobHttpHeaders
+        {
+            ContentType = contentType
+        };
+
+        return blobHttpHeaders;
     }
 }
