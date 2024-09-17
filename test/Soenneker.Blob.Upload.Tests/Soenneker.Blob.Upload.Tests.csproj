@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\src\Soenneker.Blob.Upload.csproj" />
+        <ProjectReference Include="..\..\src\Soenneker.Blob.Upload.csproj" />
     </ItemGroup>
 
 </Project>
