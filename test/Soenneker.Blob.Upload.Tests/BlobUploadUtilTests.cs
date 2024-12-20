@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Soenneker.Blob.Upload.Abstract;
 using Soenneker.Tests.FixturedUnit;
 using Xunit;
@@ -14,5 +13,11 @@ public class BlobUploadUtilTests : FixturedUnitTest
     public BlobUploadUtilTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
     {
         _util = Resolve<IBlobUploadUtil>(true);
+    }
+
+    [Fact]
+    public void Default()
+    {
+
     }
 }
