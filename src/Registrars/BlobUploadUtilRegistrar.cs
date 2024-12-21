@@ -11,17 +11,21 @@ namespace Soenneker.Blob.Upload.Registrars;
 /// </summary>
 public static class BlobUploadUtilRegistrar
 {
-    public static void AddBlobUploadUtilAsSingleton(this IServiceCollection services)
+    public static IServiceCollection AddBlobUploadUtilAsSingleton(this IServiceCollection services)
     {
         services.AddMemoryStreamUtil();
         services.AddBlobSasUtilAsSingleton();
         services.TryAddSingleton<IBlobUploadUtil, BlobUploadUtil>();
+
+        return services;
     }
 
-    public static void AddBlobUploadUtilAsScoped(this IServiceCollection services)
+    public static IServiceCollection AddBlobUploadUtilAsScoped(this IServiceCollection services)
     {
         services.AddMemoryStreamUtil();
         services.AddBlobSasUtilAsScoped();
         services.TryAddScoped<IBlobUploadUtil, BlobUploadUtil>();
+
+        return services;
     }
 }
