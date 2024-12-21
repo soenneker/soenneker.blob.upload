@@ -50,7 +50,7 @@ public class BlobUploadUtil : IBlobUploadUtil
         PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Uploading Blob ({absolutePath}) to container ({containerName}) at {relativeUrl} ...", absolutePath, containerName, relativeUrl);
-        BlobClient blobClient = await _blobClientUtil.Get(containerName, relativeUrl, publicAccessType).NoSync();
+        BlobClient blobClient = await _blobClientUtil.Get(containerName, relativeUrl, publicAccessType, cancellationToken).NoSync();
 
         BlobHttpHeaders? blobHttpHeaders = GetBlobHeaders(contentType);
 
@@ -66,7 +66,7 @@ public class BlobUploadUtil : IBlobUploadUtil
     {
         _ = await Upload(container, fileName, bytes, contentType, publicAccessType, cancellationToken).NoSync();
 
-        string uri = (await _blobSasUtil.GetSasUriWithClient(container, fileName).NoSync())!;
+        string uri = (await _blobSasUtil.GetSasUriWithClient(container, fileName, cancellationToken).NoSync())!;
 
         return uri;
     }
