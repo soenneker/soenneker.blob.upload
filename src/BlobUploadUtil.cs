@@ -34,16 +34,14 @@ public class BlobUploadUtil : IBlobUploadUtil
         PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
     {
         using MemoryStream stream = await _memoryStreamUtil.Get(bytes, cancellationToken).NoSync();
-        Response<BlobContentInfo> result = await Upload(containerName, relativeUrl, stream, contentType, publicAccessType, cancellationToken).NoSync();
-        return result;
+        return await Upload(containerName, relativeUrl, stream, contentType, publicAccessType, cancellationToken).NoSync();
     }
 
     public async ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, string content, string? contentType = null,
         PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
     {
         using MemoryStream stream = await _memoryStreamUtil.Get(content, cancellationToken).NoSync();
-        Response<BlobContentInfo> result = await Upload(containerName, relativeUrl, stream, contentType, publicAccessType, cancellationToken).NoSync();
-        return result;
+        return await Upload(containerName, relativeUrl, stream, contentType, publicAccessType, cancellationToken).NoSync();
     }
 
     public async ValueTask<Response<BlobContentInfo>> UploadFromFile(string containerName, string relativeUrl, string absolutePath, string? contentType = null,
@@ -61,14 +59,12 @@ public class BlobUploadUtil : IBlobUploadUtil
         return response;
     }
 
-    public async ValueTask<string> UploadAndGetSasUri(string container, string fileName, byte[] bytes, string? contentType = null,
-        PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
+    public async ValueTask<string> UploadAndGetSasUri(string container, string fileName, byte[] bytes, string? contentType = null, PublicAccessType publicAccessType = PublicAccessType.None,
+        CancellationToken cancellationToken = default)
     {
         _ = await Upload(container, fileName, bytes, contentType, publicAccessType, cancellationToken).NoSync();
 
-        string uri = (await _blobSasUtil.GetSasUriWithClient(container, fileName, cancellationToken).NoSync())!;
-
-        return uri;
+        return (await _blobSasUtil.GetSasUriWithClient(container, fileName, cancellationToken).NoSync())!;
     }
 
     public async ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, Stream content, string? contentType = null,
