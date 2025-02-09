@@ -33,6 +33,8 @@ public class BlobUploadUtil : IBlobUploadUtil
     public async ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, byte[] bytes, string? contentType = null,
         PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         using MemoryStream stream = await _memoryStreamUtil.Get(bytes, cancellationToken).NoSync();
         return await Upload(containerName, relativeUrl, stream, contentType, publicAccessType, cancellationToken).NoSync();
     }
@@ -40,6 +42,8 @@ public class BlobUploadUtil : IBlobUploadUtil
     public async ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, string content, string? contentType = null,
         PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         using MemoryStream stream = await _memoryStreamUtil.Get(content, cancellationToken).NoSync();
         return await Upload(containerName, relativeUrl, stream, contentType, publicAccessType, cancellationToken).NoSync();
     }
@@ -47,6 +51,8 @@ public class BlobUploadUtil : IBlobUploadUtil
     public async ValueTask<Response<BlobContentInfo>> UploadFromFile(string containerName, string relativeUrl, string absolutePath, string? contentType = null,
         PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         _logger.LogInformation("Uploading Blob ({absolutePath}) to container ({containerName}) at {relativeUrl} ...", absolutePath, containerName, relativeUrl);
         BlobClient blobClient = await _blobClientUtil.Get(containerName, relativeUrl, publicAccessType, cancellationToken).NoSync();
 
@@ -70,6 +76,8 @@ public class BlobUploadUtil : IBlobUploadUtil
     public async ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, Stream content, string? contentType = null,
         PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         _logger.LogInformation("Uploading Blob to container ({containerName}), path {relativeUrl} ...", containerName, relativeUrl);
         BlobClient blobClient = await _blobClientUtil.Get(containerName, relativeUrl, publicAccessType, cancellationToken).NoSync();
 
