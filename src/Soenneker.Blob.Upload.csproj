@@ -36,7 +36,7 @@
         <None Include="..\README.md" Pack="true" PackagePath="\" />
         <None Include="..\LICENSE" Pack="true" PackagePath="\" />
         <None Include="..\icon.png" Pack="true" PackagePath="\" />
-        <PackageReference Include="Soenneker.Blob.Sas" Version="4.0.2774" />
+        <PackageReference Include="Soenneker.Blob.Sas" Version="4.0.2775" />
         <PackageReference Include="Soenneker.Utils.MemoryStream" Version="4.0.1321" />
     </ItemGroup>
 </Project>
