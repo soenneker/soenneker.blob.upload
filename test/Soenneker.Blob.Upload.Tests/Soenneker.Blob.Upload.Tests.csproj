@@ -26,10 +26,5 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Soenneker.Blob.Upload\Soenneker.Blob.Upload.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="testconfig.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
 </Project>
+
