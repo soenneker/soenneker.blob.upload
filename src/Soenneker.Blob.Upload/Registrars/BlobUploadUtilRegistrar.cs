@@ -11,6 +11,11 @@ namespace Soenneker.Blob.Upload.Registrars;
 /// </summary>
 public static class BlobUploadUtilRegistrar
 {
+    /// <summary>
+    /// Adds blob upload util as singleton.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The result of the operation.</returns>
     public static IServiceCollection AddBlobUploadUtilAsSingleton(this IServiceCollection services)
     {
         services.AddMemoryStreamUtilAsSingleton()
@@ -20,6 +25,11 @@ public static class BlobUploadUtilRegistrar
         return services;
     }
 
+    /// <summary>
+    /// Adds blob upload util as scoped.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The result of the operation.</returns>
     public static IServiceCollection AddBlobUploadUtilAsScoped(this IServiceCollection services)
     {
         services.AddMemoryStreamUtilAsSingleton()
