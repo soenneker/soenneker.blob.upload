@@ -16,10 +16,11 @@ public interface IBlobUploadUtil
     /// </summary>
     /// <param name="containerName">The name of the container where the blob will be uploaded.</param>
     /// <param name="relativeUrl">The relative URL where the blob will be uploaded.</param>
-    /// <param name="bytes">The byte array to be uploaded as a blob.</param>
+    /// <param name="bytes">bytes to process.</param>
     /// <param name="contentType">The content type of the blob. Optional.</param>
     /// <param name="publicAccessType">The public access type for the blob. Defaults to None.</param>
     /// <param name="cancellationToken">A token to cancel the operation. Optional.</param>
+    /// <returns>A task whose result is the requested response.</returns>
     ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, byte[] bytes, string? contentType = null,
         PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default);
 
@@ -28,10 +29,11 @@ public interface IBlobUploadUtil
     /// </summary>
     /// <param name="containerName">The name of the container where the blob will be uploaded.</param>
     /// <param name="relativeUrl">The relative URL where the blob will be uploaded.</param>
-    /// <param name="content">The string content to be uploaded as a blob.</param>
+    /// <param name="content">Content to render, store, or send.</param>
     /// <param name="contentType">The content type of the blob. Optional.</param>
     /// <param name="publicAccessType">The public access type for the blob. Defaults to None.</param>
     /// <param name="cancellationToken">A token to cancel the operation. Optional.</param>
+    /// <returns>A task whose result is the requested response.</returns>
     ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, string content, string? contentType = null,
         PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default);
 
@@ -44,6 +46,7 @@ public interface IBlobUploadUtil
     /// <param name="contentType">The content type of the blob. Optional.</param>
     /// <param name="publicAccessType">The public access type for the blob. Defaults to None.</param>
     /// <param name="cancellationToken">A token to cancel the operation. Optional.</param>
+    /// <returns>A task whose result is the requested response.</returns>
     ValueTask<Response<BlobContentInfo>> UploadFromFile(string containerName, string relativeUrl, string absolutePath, string? contentType = null,
         PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default);
 
@@ -52,10 +55,11 @@ public interface IBlobUploadUtil
     /// </summary>
     /// <param name="container">The name of the container where the blob will be uploaded.</param>
     /// <param name="fileName">The name of the file to be uploaded as a blob.</param>
-    /// <param name="bytes">The byte array to be uploaded as a blob.</param>
+    /// <param name="bytes">bytes to process.</param>
     /// <param name="contentType">The content type of the blob. Optional.</param>
     /// <param name="publicAccessType">The public access type for the blob. Defaults to None.</param>
     /// <param name="cancellationToken">A token to cancel the operation. Optional.</param>
+    /// <returns>A task whose result is the text returned by upload And Get Sas URI.</returns>
     ValueTask<string> UploadAndGetSasUri(string container, string fileName, byte[] bytes, string? contentType = null,
         PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default);
 
@@ -64,10 +68,11 @@ public interface IBlobUploadUtil
     /// </summary>
     /// <param name="containerName">The name of the container where the blob will be uploaded.</param>
     /// <param name="relativeUrl">The relative URL where the blob will be uploaded.</param>
-    /// <param name="content">The stream content to be uploaded as a blob.</param>
+    /// <param name="content">Content to render, store, or send.</param>
     /// <param name="contentType">The content type of the blob. Optional.</param>
     /// <param name="publicAccessType">The public access type for the blob. Defaults to None.</param>
     /// <param name="cancellationToken">A token to cancel the operation. Optional.</param>
+    /// <returns>A task whose result is the requested response.</returns>
     ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, Stream content, string? contentType = null,
         PublicAccessType publicAccessType = PublicAccessType.None, CancellationToken cancellationToken = default);
 }

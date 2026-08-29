@@ -12,10 +12,10 @@ namespace Soenneker.Blob.Upload.Registrars;
 public static class BlobUploadUtilRegistrar
 {
     /// <summary>
-    /// Adds blob upload util as singleton.
+    /// Registers Blob Upload Util with a singleton lifetime.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <returns>The result of the operation.</returns>
+    /// <param name="services">Service collection that receives the registration.</param>
+    /// <returns>The same service collection, so additional registrations can be chained.</returns>
     public static IServiceCollection AddBlobUploadUtilAsSingleton(this IServiceCollection services)
     {
         services.AddMemoryStreamUtilAsSingleton()
@@ -26,10 +26,10 @@ public static class BlobUploadUtilRegistrar
     }
 
     /// <summary>
-    /// Adds blob upload util as scoped.
+    /// Registers Blob Upload Util with a scoped lifetime.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <returns>The result of the operation.</returns>
+    /// <param name="services">Service collection that receives the registration.</param>
+    /// <returns>The same service collection, so additional registrations can be chained.</returns>
     public static IServiceCollection AddBlobUploadUtilAsScoped(this IServiceCollection services)
     {
         services.AddMemoryStreamUtilAsSingleton()
