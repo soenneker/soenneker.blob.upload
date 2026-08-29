@@ -14,7 +14,7 @@ using Soenneker.Utils.MemoryStream.Abstract;
 
 namespace Soenneker.Blob.Upload;
 
-///<inheritdoc cref="IBlobUploadUtil"/>
+/// <inheritdoc cref="IBlobUploadUtil"/>
 public sealed class BlobUploadUtil : IBlobUploadUtil
 {
     private readonly IBlobClientUtil _blobClientUtil;
