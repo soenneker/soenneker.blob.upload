@@ -53,14 +53,14 @@ public sealed class BlobUploadUtil : IBlobUploadUtil
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        _logger.LogInformation("Uploading Blob ({absolutePath}) to container ({containerName}) at {relativeUrl} ...", absolutePath, containerName, relativeUrl);
+        _logger.LogInformation("Uploading file to blob {containerName}/{relativeUrl} ...", containerName, relativeUrl);
         BlobClient blobClient = await _blobClientUtil.Get(containerName, relativeUrl, publicAccessType, cancellationToken).NoSync();
 
         BlobHttpHeaders? blobHttpHeaders = GetBlobHeaders(contentType);
 
         Response<BlobContentInfo> response = await blobClient.UploadAsync(absolutePath, blobHttpHeaders, cancellationToken: cancellationToken).NoSync();
 
-        _logger.LogDebug("Finished upload Blob ({absolutePath}) to container ({containerName}) at {relativeUrl}", absolutePath, containerName, relativeUrl);
+        _logger.LogDebug("Finished file upload to blob {containerName}/{relativeUrl}", containerName, relativeUrl);
 
         return response;
     }
@@ -70,7 +70,7 @@ public sealed class BlobUploadUtil : IBlobUploadUtil
     {
         _ = await Upload(container, fileName, bytes, contentType, publicAccessType, cancellationToken).NoSync();
 
-        return (await _blobSasUtil.GetSasUriWithClient(container, fileName, cancellationToken).NoSync())!;
+        return _blobSasUtil.GetSasUri(container, fileName);
     }
 
     public async ValueTask<Response<BlobContentInfo>> Upload(string containerName, string relativeUrl, Stream content, string? contentType = null,

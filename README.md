@@ -5,42 +5,114 @@
 
 # Soenneker.Blob.Upload
 
-All of these methods overwrite a file if it currently exists.
+Uploads files, streams, bytes, and text to Azure block blobs.
 
-## Install
+## Installation
 
 ```bash
 dotnet add package Soenneker.Blob.Upload
 ```
 
-## Quick start
+## Configuration
 
-```csharp
-using Soenneker.Blob.Upload.Registrars;
-using Microsoft.Extensions.DependencyInjection;
-
-var services = new ServiceCollection();
-var result = services.AddBlobUploadUtilAsSingleton();
+```json
+{
+  "Environment": "Production",
+  "Azure": {
+    "Storage": {
+      "Blob": {
+        "ConnectionString": "<connection string>",
+        "AccountName": "<storage account name>",
+        "AccountKey": "<storage account key>"
+      }
+    }
+  }
+}
 ```
 
-Registers Blob Upload Util with a singleton lifetime.
+The connection string is used for uploads. The account name, account key, and environment are required by the registered SAS utility and by `UploadAndGetSasUri`.
 
-## What you get
+## Registration
 
-- `IBlobUploadUtil` — All of these methods overwrite a file if it currently exists.
-- `BlobUploadUtilRegistrar` — A utility library for Azure Blob storage upload operations.
+```csharp
+using Microsoft.Extensions.DependencyInjection;
+using Soenneker.Blob.Upload.Registrars;
 
-## API at a glance
+services.AddBlobUploadUtilAsSingleton();
+```
 
-| API | What it does | Result / important behavior |
-| --- | --- | --- |
-| `IBlobUploadUtil.Upload(containerName, relativeUrl, bytes, contentType, publicAccessType, cancellationToken)` | Uploads a byte array to the specified container and relative URL. | A task whose result is the requested response. |
-| `IBlobUploadUtil.Upload(containerName, relativeUrl, content, contentType, publicAccessType, cancellationToken)` | Uploads a string content to the specified container and relative URL. | A task whose result is the requested response. |
-| `IBlobUploadUtil.UploadFromFile(containerName, relativeUrl, absolutePath, contentType, publicAccessType, cancellationToken)` | Uploads a file from the specified absolute path to the specified container and relative URL. | A task whose result is the requested response. |
-| `IBlobUploadUtil.UploadAndGetSasUri(container, fileName, bytes, contentType, publicAccessType, cancellationToken)` | Uploads a byte array to the specified container and file name, and returns a SAS URI to access the uploaded blob. | A task whose result is the text returned by upload And Get Sas URI. |
-| `BlobUploadUtilRegistrar.AddBlobUploadUtilAsSingleton(services)` | Registers Blob Upload Util with a singleton lifetime. | The same service collection, so additional registrations can be chained. |
-| `BlobUploadUtilRegistrar.AddBlobUploadUtilAsScoped(services)` | Registers Blob Upload Util with a scoped lifetime. | The same service collection, so additional registrations can be chained. |
+`AddBlobUploadUtilAsScoped()` is also available.
 
-## Practical notes
+## Upload text or bytes
 
-- Cancellation stops pending work; it does not undo work that has already completed.
+```csharp
+using Soenneker.Blob.Upload.Abstract;
+
+public sealed class ManifestStore
+{
+    private readonly IBlobUploadUtil _uploads;
+
+    public ManifestStore(IBlobUploadUtil uploads)
+    {
+        _uploads = uploads;
+    }
+
+    public async ValueTask Save(
+        string json,
+        CancellationToken cancellationToken)
+    {
+        _ = await _uploads.Upload(
+            "assets",
+            "manifests/latest.json",
+            json,
+            contentType: "application/json",
+            cancellationToken: cancellationToken);
+    }
+}
+```
+
+## Upload a file or stream
+
+Use the file and stream overloads to avoid first copying large content into a byte array:
+
+```csharp
+_ = await uploads.UploadFromFile(
+    "exports",
+    "daily/archive.zip",
+    absolutePath,
+    contentType: "application/zip",
+    cancellationToken: cancellationToken);
+
+await using FileStream input = File.OpenRead(absolutePath);
+
+_ = await uploads.Upload(
+    "exports",
+    "daily/archive.zip",
+    input,
+    contentType: "application/zip",
+    cancellationToken: cancellationToken);
+```
+
+The stream overload begins at the stream's current position and does not dispose or rewind it.
+
+## Upload and create a read URL
+
+```csharp
+string sasUri = await uploads.UploadAndGetSasUri(
+    "private-assets",
+    "previews/report.pdf",
+    pdfBytes,
+    contentType: "application/pdf",
+    cancellationToken: cancellationToken);
+```
+
+The returned URL is read-only and expires after one month. Treat it as a credential: do not log it or expose it to callers that should not read the blob.
+
+## Behavior
+
+- Every upload overwrites an existing block blob at the same container and path. This API does not expose conditional create or ETag protection.
+- Supplying `contentType` stores it in the blob's HTTP headers. The library does not infer a MIME type from a filename.
+- Byte-array and string overloads buffer content in a temporary memory stream. Prefer file or stream uploads for large or untrusted payloads.
+- The caller owns streams passed to `Upload`; the library-owned streams used by byte and string overloads are disposed automatically.
+- The underlying client utility creates a missing container. `publicAccessType` applies only during that creation and does not change an existing container's access level.
+- Azure service failures are thrown as `RequestFailedException`; cancellation is passed through to client creation and upload.
