@@ -40,6 +40,6 @@
         <None Include="..\..\LICENSE" Pack="true" PackagePath="\" />
         <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
         <PackageReference Include="Soenneker.Blob.Sas" Version="4.0.3039" />
-        <PackageReference Include="Soenneker.Utils.MemoryStream" Version="4.0.1516" />
+        <PackageReference Include="Soenneker.Utils.MemoryStream" Version="4.0.1522" />
     </ItemGroup>
 </Project>
