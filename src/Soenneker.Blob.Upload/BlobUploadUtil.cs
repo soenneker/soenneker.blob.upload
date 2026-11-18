@@ -60,7 +60,8 @@ public sealed class BlobUploadUtil : IBlobUploadUtil
 
         Response<BlobContentInfo> response = await blobClient.UploadAsync(absolutePath, blobHttpHeaders, cancellationToken: cancellationToken).NoSync();
 
-        _logger.LogDebug("Finished file upload to blob {containerName}/{relativeUrl}", containerName, relativeUrl);
+        if (_logger.IsEnabled(LogLevel.Debug))
+            _logger.LogDebug("Finished file upload to blob {containerName}/{relativeUrl}", containerName, relativeUrl);
 
         return response;
     }
@@ -85,7 +86,8 @@ public sealed class BlobUploadUtil : IBlobUploadUtil
 
         Response<BlobContentInfo> response = await blobClient.UploadAsync(content, blobHttpHeaders, cancellationToken: cancellationToken).NoSync();
 
-        _logger.LogDebug("Finished Blob upload to container ({containerName}), path {relativeUrl}", containerName, relativeUrl);
+        if (_logger.IsEnabled(LogLevel.Debug))
+            _logger.LogDebug("Finished Blob upload to container ({containerName}), path {relativeUrl}", containerName, relativeUrl);
 
         return response;
     }
